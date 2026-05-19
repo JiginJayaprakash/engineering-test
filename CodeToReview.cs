@@ -6,8 +6,9 @@ namespace Utility.Valocity.ProfileHelper
 {
     public class People
     {
-     //Jigin: we are using both DateTimeOffset and DateTime , could we just use one  DateTimeOffset? is there any particular requirement for using both?
-     private static readonly DateTimeOffset Under16 = DateTimeOffset.UtcNow.AddYears(-15);
+        //Jigin: Using DateTimeOffset consistently throughout to avoid mixing DateTime and DateTimeOffset,
+        // which can cause ambiguous conversions and timezone-related bugs.
+        private static readonly DateTimeOffset Under16 = DateTimeOffset.UtcNow.AddYears(-15);
      public string Name { get; private set; }
      public DateTimeOffset DOB { get; private set; }
      public People(string name) : this(name, Under16.Date) { }
@@ -34,10 +35,9 @@ namespace Utility.Valocity.ProfileHelper
         /// <param name="j"></param>
         /// <returns>List<object></returns>
 
-        //Jigin: do we want the GetPeople to always return result with count i or add up whenever its called?
-        //Jigin: now it will add up _people and provide result count adding to the existing count , we can declare _people inside GetPeople method to get the same result count as i
-        // BirthingUnit bu = new BirthingUnit(); bu.GetPeople(2); bu.GetPeople(3); the second one will return 5 list rather than 3
-        //
+        // Jigin: Results accumulate across calls because _people is instance-level state.
+        // e.g. GetPeople(2) then GetPeople(3) returns 5 entries, not 3.
+        // To reset between calls, move _people declaration inside this method.
         public List<People> GetPeople(int i)
         {
             for (int j = 0; j < i; j++)
